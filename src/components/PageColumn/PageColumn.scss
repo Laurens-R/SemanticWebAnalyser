@@ -1,0 +1,22 @@
+.page-column {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100%;   // flex-row item: fill full height of pages row
+  min-width: 0;
+  overflow: hidden;
+  border-right: 1px solid var(--color-border);
+
+  &--b {
+    border-right: none;
+  }
+
+  &__error-bar {
+    padding: 6px 12px;
+    background: #fee2e2;
+    border-bottom: 1px solid #fca5a5;
+    font-size: 12px;
+    color: #dc2626;
+    flex-shrink: 0;
+  }
+}

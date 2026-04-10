@@ -1,0 +1,108 @@
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.settings-panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+  width: 480px;
+  max-width: 90vw;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--color-border);
+
+    h2 {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0;
+      color: var(--color-text);
+    }
+  }
+
+  &__close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+
+    &:hover {
+      background: var(--color-surface-hover);
+      color: var(--color-text);
+    }
+  }
+
+  &__body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  &__section {
+    h3 {
+      font-size: 13px;
+      font-weight: 600;
+      margin: 0 0 6px;
+      color: var(--color-text);
+    }
+  }
+
+  &__description {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin: 0 0 12px;
+    line-height: 1.5;
+
+    strong {
+      color: var(--color-text);
+    }
+  }
+
+  &__toggle-visibility {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    display: flex;
+    align-items: center;
+    padding: 2px;
+    border-radius: 4px;
+
+    &:hover {
+      color: var(--color-text);
+    }
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 14px 20px;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-surface-raised);
+  }
+}

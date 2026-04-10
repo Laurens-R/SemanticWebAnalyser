@@ -1,0 +1,175 @@
+// ─── Design Tokens ──────────────────────────────────────────────────────────
+
+:root {
+  // Brand
+  --color-brand: #6366f1;
+  --color-brand-dark: #4f46e5;
+  --color-brand-light: #ede9fe;
+
+  // Surfaces
+  --color-surface: #ffffff;
+  --color-surface-raised: #f8f9fc;
+  --color-surface-hover: #f1f3f8;
+
+  // Text
+  --color-text: #111827;
+  --color-text-secondary: #6b7280;
+  --color-text-placeholder: #9ca3af;
+
+  // Borders
+  --color-border: #e5e7eb;
+  --color-border-strong: #d1d5db;
+
+  // Status
+  --color-danger: #ef4444;
+  --color-danger-dark: #dc2626;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+
+  // Info states
+  --color-info-bg: #eef2ff;
+  --color-info-border: #c7d2fe;
+
+  // Selection
+  --color-selection-bg: #fdf4ff;
+  --color-selection-border: #d8b4fe;
+
+  // Code
+  --color-code-bg: #f4f4f8;
+  --color-code-text: #4338ca;
+
+  // Tooltip
+  --color-tooltip-bg: #1f2937;
+  --color-tooltip-text: #f9fafb;
+
+  // Misc
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.14);
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+}
+
+// ─── Reset & Base ────────────────────────────────────────────────────────────
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-text);
+  background: var(--color-surface);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button, input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+// ─── App Layout ──────────────────────────────────────────────────────────────
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+
+  &__workspace {
+    display: flex;
+    flex: 1;
+    min-height: 0;  // flex-column item: prevents overflow
+    overflow: hidden;
+  }
+
+  &__pages {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    height: 100%;   // flex-row item: inherit full height from workspace
+    overflow: hidden;
+  }
+
+  &__divider {
+    width: 4px;
+    background: var(--color-border);
+    flex-shrink: 0;
+    cursor: col-resize;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0 -2px;
+    }
+
+    &:hover {
+      background: var(--color-brand);
+      opacity: 0.5;
+    }
+  }
+
+  &__sidebar {
+    width: 340px;
+    min-width: 280px;
+    max-width: 440px;
+    flex-shrink: 0;
+    height: 100%;   // flex-row item: inherit full height
+    border-left: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--color-surface);
+  }
+}
+
+// ─── Scrollbar ───────────────────────────────────────────────────────────────
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+
+  &:hover {
+    background: var(--color-border-strong);
+  }
+}
+
+// ─── Focus Ring ──────────────────────────────────────────────────────────────
+
+:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+// ─── Selection ───────────────────────────────────────────────────────────────
+
+::selection {
+  background: var(--color-brand-light);
+  color: var(--color-brand-dark);
+}

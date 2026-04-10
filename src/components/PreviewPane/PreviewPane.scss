@@ -1,0 +1,43 @@
+.preview-pane {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+  background: var(--color-surface-raised);
+
+  &__viewport {
+    position: absolute;
+    inset: 0;
+  }
+
+  &__webview {
+    display: flex;
+    width:100%;
+    height:100%;
+    border: none;
+    // Width/height set imperatively via ResizeObserver in component
+  }
+
+  &__empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: var(--color-text-placeholder);
+    padding: 40px;
+
+    p {
+      font-size: 13px;
+      margin: 0;
+    }
+  }
+
+  &__empty-icon {
+    width: 48px;
+    height: 48px;
+    opacity: 0.4;
+  }
+}
