@@ -2,13 +2,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
-  height: 52px;
+  padding: 0 0 0 16px;
+  height: 48px;
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
   flex-shrink: 0;
   -webkit-app-region: drag;
   gap: 16px;
+  user-select: none;
 
   &__brand {
     display: flex;
@@ -28,10 +29,68 @@
     letter-spacing: -0.01em;
   }
 
+  &__drag-spacer {
+    flex: 1;
+    height: 100%;
+    -webkit-app-region: drag;
+  }
+
   &__actions {
     display: flex;
     align-items: center;
     gap: 8px;
     -webkit-app-region: no-drag;
+    padding-right: 8px;
+  }
+
+  // Window control buttons (Windows style — right side)
+  &__window-controls {
+    display: flex;
+    align-items: stretch;
+    height: 100%;
+    -webkit-app-region: no-drag;
+
+    &--mac {
+      padding-left: 8px;
+      gap: 8px;
+      align-items: center;
+    }
+  }
+
+  &__wc {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 100%;
+    border: none;
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+
+    &:hover {
+      background: var(--color-surface-hover);
+      color: var(--color-text);
+    }
+
+    &--close:hover {
+      background: #e81123;
+      color: #fff;
+    }
+
+    // macOS traffic-light style
+    .toolbar__window-controls--mac & {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+
+      &--minimize  { background: #f59e0b; color: transparent; &:hover { color: #92400e; } }
+      &--maximize  { background: #22c55e; color: transparent; &:hover { color: #14532d; } }
+      &--close     { background: #ef4444; color: transparent; &:hover { background: #ef4444; color: #7f1d1d; } }
+
+      svg { opacity: 0; transition: opacity 0.1s; }
+      &:hover svg { opacity: 1; }
+    }
   }
 }

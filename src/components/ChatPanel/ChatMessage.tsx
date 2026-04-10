@@ -1,13 +1,43 @@
 import React from 'react'
-import type { ChatMessage } from '../../types'
+import type { ChatMessage, AnalysisMatch } from '../../types'
+import { AnalysisResultTable } from './AnalysisResultTable'
 import './ChatMessage.scss'
 
 interface ChatMessageProps {
   message: ChatMessage
+  onHighlight: (match: AnalysisMatch) => void
+  onClearHighlights: () => void
 }
 
-export const ChatMessageItem: React.FC<ChatMessageProps> = ({ message }) => {
+function extractStructured(message: ChatMessage): import('../../types').StructuredResponse | null {
+  // Valid structured response already parsed
+  if (message.structured && message.structured.matches.length > 0) return message.structured
+
+  // Try to re-parse — either from structured.summary (when parseResponse fell back to raw JSON)
+  // or from message.content directly (HMR / stale-instance edge cases)
+  const candidates = [
+    message.structured?.summary,
+    message.content,
+  ]
+  for (const text of candidates) {
+    if (!text) continue
+    const match = text.match(/\{[\s\S]*\}/)
+    if (!match) continue
+    try {
+      const parsed = JSON.parse(match[0]) as import('../../types').StructuredResponse
+      if (typeof parsed.summary === 'string' && Array.isArray(parsed.matches)) return parsed
+    } catch { /* keep trying */ }
+  }
+  // Return existing structured if it has a valid (non-JSON) summary, else null
+  if (message.structured && !message.structured.summary.trimStart().startsWith('{')) {
+    return message.structured
+  }
+  return null
+}
+
+export const ChatMessageItem: React.FC<ChatMessageProps> = ({ message, onHighlight, onClearHighlights }) => {
   const isUser = message.role === 'user'
+  const structured = !isUser ? extractStructured(message) : null
 
   // Minimal markdown rendering: bold, inline code, code blocks
   const renderContent = (text: string) => {
@@ -66,7 +96,14 @@ export const ChatMessageItem: React.FC<ChatMessageProps> = ({ message }) => {
       </div>
       <div className="chat-message__bubble">
         <div className="chat-message__content">
-          {renderContent(message.content)}
+          {structured
+            ? <AnalysisResultTable
+                response={structured}
+                onHighlight={onHighlight}
+                onClearHighlights={onClearHighlights}
+              />
+            : renderContent(message.content)
+          }
         </div>
         <span className="chat-message__time">
           {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

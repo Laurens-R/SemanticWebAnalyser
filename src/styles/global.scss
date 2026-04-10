@@ -60,6 +60,12 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  outline: none;
+}
+
+*:focus,
+*:focus-visible {
+  outline: none;
 }
 
 html,
@@ -126,17 +132,43 @@ button, input, textarea, select {
     }
   }
 
+  // Full-screen transparent overlay rendered during any drag — sits above webviews
+  &__drag-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    cursor: col-resize;
+    background: transparent;
+  }
+
   &__sidebar {
-    width: 340px;
-    min-width: 280px;
-    max-width: 440px;
     flex-shrink: 0;
-    height: 100%;   // flex-row item: inherit full height
+    height: 100%;
     border-left: 1px solid var(--color-border);
     display: flex;
     flex-direction: column;
     overflow: hidden;
     background: var(--color-surface);
+    position: relative;
+    min-width: 260px;
+    max-width: 700px;
+  }
+
+  &__sidebar-resizer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    cursor: col-resize;
+    z-index: 10;
+    background: transparent;
+
+    &:hover,
+    &:active {
+      background: var(--color-brand);
+      opacity: 0.4;
+    }
   }
 }
 
@@ -162,10 +194,6 @@ button, input, textarea, select {
 
 // ─── Focus Ring ──────────────────────────────────────────────────────────────
 
-:focus-visible {
-  outline: 2px solid var(--color-brand);
-  outline-offset: 2px;
-}
 
 // ─── Selection ───────────────────────────────────────────────────────────────
 

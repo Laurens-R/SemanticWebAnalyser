@@ -2,10 +2,12 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  height: 100%;   // flex-row item: fill full height of pages row
+  height: 100%;
   min-width: 0;
   overflow: hidden;
   border-right: 1px solid var(--color-border);
+  // When a style prop overrides flex, honour it
+  &[style] { flex: none; }
 
   &--b {
     border-right: none;

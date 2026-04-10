@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, session } from 'electron'
+import { app, BrowserWindow, ipcMain, session, Menu } from 'electron'
 import { join } from 'path'
 
 let win: BrowserWindow | null
@@ -7,13 +7,17 @@ let win: BrowserWindow | null
 const RENDERER_URL = process.env['ELECTRON_RENDERER_URL']
 
 function createWindow() {
+  // Hide the native application menu entirely
+  Menu.setApplicationMenu(null)
+
   win = new BrowserWindow({
     width: 1600,
     height: 1000,
     minWidth: 1100,
     minHeight: 700,
     backgroundColor: '#f8f9fa',
-    titleBarStyle: 'hiddenInset',
+    frame: false,          // remove native title bar + frame
+    titleBarStyle: 'hidden',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       nodeIntegration: false,
@@ -33,6 +37,20 @@ function createWindow() {
     win.loadFile(join(__dirname, '../renderer/index.html'))
   }
 }
+
+// Window control IPC
+ipcMain.on('window-minimize', () => win?.minimize())
+ipcMain.on('window-maximize', () => {
+  if (win?.isMaximized()) win.unmaximize()
+  else win?.maximize()
+})
+ipcMain.on('window-close', () => win?.close())
+ipcMain.handle('window-is-maximized', () => win?.isMaximized() ?? false)
+
+// Open DevTools for the main renderer window
+ipcMain.on('open-devtools', () => {
+  win?.webContents.openDevTools({ mode: 'detach' })
+})
 
 // Handle DOM extraction from webview
 ipcMain.handle('extract-dom', async (_event, _webviewId: number) => {

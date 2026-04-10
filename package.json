@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.87.0",
+    "electron-debug": "^4.1.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5"
   },

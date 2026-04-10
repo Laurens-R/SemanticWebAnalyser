@@ -17,11 +17,11 @@
     background: var(--color-surface-raised);
     border: 1px solid var(--color-border);
     border-radius: 6px;
-    transition: border-color 0.15s, box-shadow 0.15s;
+    transition: border-color 0.15s;
+    outline: none;
 
     &:focus-within {
-      border-color: var(--color-brand);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+      border-color: var(--color-border-strong);
     }
   }
 

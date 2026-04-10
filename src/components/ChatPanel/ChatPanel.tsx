@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import type { ChatMessage, ElementSelection } from '../../types'
+import type { ChatMessage, ElementSelection, AnalysisMatch } from '../../types'
 import { ChatMessageItem } from './ChatMessage'
 import { Button } from '../shared/Button/Button'
 import { Badge } from '../shared/Badge/Badge'
@@ -15,6 +15,8 @@ interface ChatPanelProps {
   onFindSimilar: (selection: ElementSelection) => void
   onClearPendingSelection: () => void
   onClearConversation: () => void
+  onHighlight: (match: AnalysisMatch) => void
+  onClearHighlights: () => void
 }
 
 export const ChatPanel: React.FC<ChatPanelProps> = ({
@@ -27,6 +29,8 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
   onFindSimilar,
   onClearPendingSelection,
   onClearConversation,
+  onHighlight,
+  onClearHighlights,
 }) => {
   const [input, setInput] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -128,7 +132,12 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
         )}
 
         {messages.map((msg) => (
-          <ChatMessageItem key={msg.id} message={msg} />
+          <ChatMessageItem
+            key={msg.id}
+            message={msg}
+            onHighlight={onHighlight}
+            onClearHighlights={onClearHighlights}
+          />
         ))}
 
         {isLoading && (

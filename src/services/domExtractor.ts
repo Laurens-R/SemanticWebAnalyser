@@ -66,3 +66,85 @@ export async function extractDomFromWebview(
   const parsed = JSON.parse(result as string) as ExtractedDom
   return parsed
 }
+
+// ---------------------------------------------------------------------------
+// Highlight / clear injected into webviews
+// ---------------------------------------------------------------------------
+
+/**
+ * Builds a self-contained script that:
+ * 1. Removes any previous highlight overlay + spotlights
+ * 2. Creates a dark full-page overlay
+ * 3. For each matched element, draws a fixed glow box over it using getBoundingClientRect()
+ * Clicking the overlay dismisses the highlight.
+ */
+export function buildHighlightScript(selectors: (string | null)[]): string {
+  const valid = selectors.filter((s): s is string => Boolean(s))
+  return `
+(function() {
+  // Clean up previous
+  document.querySelectorAll('#__swa_overlay, .swa_spotlight').forEach(function(el) { el.remove(); });
+
+  var sels = ${JSON.stringify(valid)};
+  if (!sels.length) return;
+
+  var elements = [];
+  sels.forEach(function(sel) {
+    try { elements.push.apply(elements, Array.from(document.querySelectorAll(sel))); } catch(e) {}
+  });
+  if (!elements.length) return;
+
+  // Dark overlay
+  var overlay = document.createElement('div');
+  overlay.id = '__swa_overlay';
+  overlay.style.cssText = [
+    'position:fixed', 'inset:0', 'background:rgba(0,0,0,0.65)',
+    'z-index:2147483645', 'pointer-events:auto', 'cursor:pointer',
+    'transition:opacity 0.2s'
+  ].join(';');
+  document.body.appendChild(overlay);
+
+  // Glow spotlights positioned over each matched element
+  elements.forEach(function(el) {
+    var r = el.getBoundingClientRect();
+    if (r.width === 0 && r.height === 0) return;
+    var box = document.createElement('div');
+    box.className = 'swa_spotlight';
+    box.style.cssText = [
+      'position:fixed',
+      'left:' + (r.left - 5) + 'px',
+      'top:' + (r.top - 5) + 'px',
+      'width:' + (r.width + 10) + 'px',
+      'height:' + (r.height + 10) + 'px',
+      'border:2px solid #6366f1',
+      'border-radius:5px',
+      'box-shadow:0 0 0 4px rgba(99,102,241,0.35),0 0 24px 8px rgba(99,102,241,0.55)',
+      'background:rgba(99,102,241,0.07)',
+      'z-index:2147483646',
+      'pointer-events:none'
+    ].join(';');
+    document.body.appendChild(box);
+  });
+
+  overlay.addEventListener('click', function() {
+    document.querySelectorAll('#__swa_overlay, .swa_spotlight').forEach(function(e) { e.remove(); });
+  }, { once: true });
+})()
+`
+}
+
+export const CLEAR_HIGHLIGHT_SCRIPT =
+  `document.querySelectorAll('#__swa_overlay, .swa_spotlight').forEach(function(el) { el.remove(); });`
+
+export async function highlightInWebview(
+  webviewEl: Electron.WebviewTag,
+  selectors: (string | null)[]
+): Promise<void> {
+  await webviewEl.executeJavaScript(buildHighlightScript(selectors))
+}
+
+export async function clearHighlightInWebview(
+  webviewEl: Electron.WebviewTag
+): Promise<void> {
+  await webviewEl.executeJavaScript(CLEAR_HIGHLIGHT_SCRIPT)
+}

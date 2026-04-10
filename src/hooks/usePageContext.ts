@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from 'react'
 import type { PageContext, ElementSelection } from '../types'
-import { extractDomFromWebview } from '../services/domExtractor'
+import { extractDomFromWebview, highlightInWebview, clearHighlightInWebview } from '../services/domExtractor'
 
 export function usePageContext(paneId: 'A' | 'B') {
   const [page, setPage] = useState<PageContext>({
@@ -84,6 +84,16 @@ export function usePageContext(paneId: 'A' | 'B') {
     }
   }, [paneId])
 
+  const highlightElements = useCallback(async (selectors: (string | null)[]) => {
+    if (!webviewRef.current) return
+    await highlightInWebview(webviewRef.current, selectors)
+  }, [])
+
+  const clearHighlights = useCallback(async () => {
+    if (!webviewRef.current) return
+    await clearHighlightInWebview(webviewRef.current)
+  }, [])
+
   return {
     page,
     webviewRef,
@@ -95,5 +105,7 @@ export function usePageContext(paneId: 'A' | 'B') {
     handleError,
     extractDom,
     getSelectedElement,
+    highlightElements,
+    clearHighlights,
   }
 }

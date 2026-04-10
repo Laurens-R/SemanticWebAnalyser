@@ -14,6 +14,7 @@ interface PageColumnProps {
   onError: (msg: string) => void
   onWebviewMount: (el: Electron.WebviewTag) => void
   onElementSelected: (selection: ElementSelection) => void
+  style?: React.CSSProperties
 }
 
 export const PageColumn: React.FC<PageColumnProps> = ({
@@ -26,9 +27,10 @@ export const PageColumn: React.FC<PageColumnProps> = ({
   onError,
   onWebviewMount,
   onElementSelected,
+  style,
 }) => {
   return (
-    <div className={`page-column page-column--${paneId.toLowerCase()}`}>
+    <div className={`page-column page-column--${paneId.toLowerCase()}`} style={style}>
       <UrlBar
         paneId={paneId}
         url={page.url}
