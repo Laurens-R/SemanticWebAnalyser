@@ -83,15 +83,6 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ apiKey, maxMatches
               />
             </div>
           </section>
-
-          <section className="settings-panel__section">
-            <h3>About</h3>
-            <p className="settings-panel__description">
-              Semantic Web Analyser compares two web pages semantically using an AI model.
-              Right-click elements in a preview to select them, then use the chat panel to
-              find similar components on the other page.
-            </p>
-          </section>
         </div>
 
         <div className="settings-panel__footer">

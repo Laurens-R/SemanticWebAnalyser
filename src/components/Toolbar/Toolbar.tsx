@@ -91,7 +91,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         </Tooltip>
 
         <Tooltip content="Open DevTools" position="bottom">
-          <Button variant="ghost" size="sm" onClick={() => api()?.openDevTools()} icon={<DevToolsIcon />} />
+          <Button variant="ghost" size="sm" onClick={() => api()?.openDevTools()} icon={<DevToolsIcon />} style={{ display: 'none' }} />
         </Tooltip>
       </div>
 
