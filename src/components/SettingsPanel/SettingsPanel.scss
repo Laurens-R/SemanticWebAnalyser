@@ -97,6 +97,12 @@
     }
   }
 
+  &__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
   &__footer {
     display: flex;
     justify-content: flex-end;

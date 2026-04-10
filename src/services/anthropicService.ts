@@ -3,6 +3,8 @@ import type { StructuredResponse, ElementSelection } from '../types'
 
 export interface AnthropicServiceConfig {
   apiKey: string
+  maxMatches?: number
+  maxTokens?: number
 }
 
 interface ConversationContext {
@@ -25,7 +27,8 @@ function compactDom(rawDom: string): string {
     .slice(0, 80000)
 }
 
-const SYSTEM_PROMPT = `You are an expert UI/UX semantic analyst comparing two web pages.
+function buildSystemPrompt(maxMatches: number): string {
+  return `You are an expert UI/UX semantic analyst comparing two web pages.
 
 Always respond with a single valid JSON object — no markdown fences, no prose outside JSON.
 Schema:
@@ -44,14 +47,18 @@ Schema:
   ]
 }
 
+comparison context:
+- only compare functional elements which elude to being components or specific sections (e.g. "main content", "navigation", "search bar", "login form", "product card"). Ignore generic structural elements (e.g. divs used purely for layout) unless they contain unique text or attributes that make them identifiable.
+
 relationship values:
 - equivalent: functionally and semantically identical
 - similar: same purpose, different implementation or naming
-- one-sided: exists only on one page (set the other selector + label to null / "Not present")
+- one-sided: exists only on one page (set the other selector + label to null / "Not present"). Only include one-sided matches if it is specifically asked for. Never ever do it otherwise.
 
 For CSS selectors: prefer #id > [data-*] > specific.class.combinations > tag[attr]. Make them specific enough to uniquely match. If a reliable selector cannot be determined, use null.
 For non-comparison questions, return an empty matches array and answer in summary.
-Return at most 12 matches — prioritise the most semantically significant ones.`
+Return at most ${maxMatches} matches — prioritise the most semantically significant ones.`
+}
 
 function parseResponse(raw: string): StructuredResponse {
   // Try increasingly aggressive extraction strategies
@@ -85,9 +92,13 @@ export class AnthropicService {
   private client: Anthropic
   private context: ConversationContext | null = null
   private conversationHistory: Array<{ role: 'user' | 'assistant'; content: string }> = []
+  private maxMatches: number
+  private maxTokens: number
 
   constructor(config: AnthropicServiceConfig) {
     this.client = new Anthropic({ apiKey: config.apiKey, dangerouslyAllowBrowser: true })
+    this.maxMatches = config.maxMatches ?? 12
+    this.maxTokens = config.maxTokens ?? 4096
   }
 
   setDomContext(ctx: ConversationContext): void {
@@ -110,8 +121,8 @@ export class AnthropicService {
   private async callClaude(messages: Array<{ role: 'user' | 'assistant'; content: string }>): Promise<StructuredResponse> {
     const response = await this.client.messages.create({
       model: 'claude-sonnet-4-5',
-      max_tokens: 4096,
-      system: SYSTEM_PROMPT,
+      max_tokens: this.maxTokens,
+      system: buildSystemPrompt(this.maxMatches),
       messages,
     })
     const raw = response.content[0].type === 'text' ? response.content[0].text : ''

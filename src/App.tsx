@@ -10,6 +10,12 @@ export default function App() {
   const [apiKey, setApiKey] = useState<string>(
     () => localStorage.getItem('swa-api-key') || ''
   )
+  const [maxMatches, setMaxMatches] = useState<number>(
+    () => parseInt(localStorage.getItem('swa-max-matches') || '12', 10)
+  )
+  const [maxTokens, setMaxTokens] = useState<number>(
+    () => parseInt(localStorage.getItem('swa-max-tokens') || '4096', 10)
+  )
   const [showSettings, setShowSettings] = useState(!localStorage.getItem('swa-api-key'))
   const [isAnalysing, setIsAnalysing] = useState(false)
   const [pendingSelection, setPendingSelection] = useState<ElementSelection | null>(null)
@@ -17,13 +23,18 @@ export default function App() {
   const pageA = usePageContext('A')
   const pageB = usePageContext('B')
 
-  const analysis = useAnalysis({ apiKey })
+  const analysis = useAnalysis({ apiKey, maxMatches, maxTokens })
 
   const handleSaveApiKey = useCallback(
-    (key: string) => {
+    (key: string, newMaxMatches: number, newMaxTokens: number) => {
       setApiKey(key)
       localStorage.setItem('swa-api-key', key)
+      setMaxMatches(newMaxMatches)
+      localStorage.setItem('swa-max-matches', String(newMaxMatches))
+      setMaxTokens(newMaxTokens)
+      localStorage.setItem('swa-max-tokens', String(newMaxTokens))
       analysis.updateApiKey(key)
+      analysis.updateSettings(newMaxMatches, newMaxTokens)
     },
     [analysis]
   )
@@ -188,6 +199,8 @@ export default function App() {
       {showSettings && (
         <SettingsPanel
           apiKey={apiKey}
+          maxMatches={maxMatches}
+          maxTokens={maxTokens}
           onSave={handleSaveApiKey}
           onClose={() => setShowSettings(false)}
         />

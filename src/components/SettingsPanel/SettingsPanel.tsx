@@ -5,16 +5,22 @@ import './SettingsPanel.scss'
 
 interface SettingsPanelProps {
   apiKey: string
-  onSave: (apiKey: string) => void
+  maxMatches: number
+  maxTokens: number
+  onSave: (apiKey: string, maxMatches: number, maxTokens: number) => void
   onClose: () => void
 }
 
-export const SettingsPanel: React.FC<SettingsPanelProps> = ({ apiKey, onSave, onClose }) => {
+export const SettingsPanel: React.FC<SettingsPanelProps> = ({ apiKey, maxMatches, maxTokens, onSave, onClose }) => {
   const [localKey, setLocalKey] = useState(apiKey)
+  const [localMaxMatches, setLocalMaxMatches] = useState(String(maxMatches))
+  const [localMaxTokens, setLocalMaxTokens] = useState(String(maxTokens))
   const [showKey, setShowKey] = useState(false)
 
   const handleSave = () => {
-    onSave(localKey.trim())
+    const parsedMatches = Math.max(1, Math.min(50, parseInt(localMaxMatches, 10) || maxMatches))
+    const parsedTokens = Math.max(256, Math.min(16384, parseInt(localMaxTokens, 10) || maxTokens))
+    onSave(localKey.trim(), parsedMatches, parsedTokens)
     onClose()
   }
 
@@ -53,6 +59,29 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({ apiKey, onSave, on
                 </button>
               }
             />
+          </section>
+
+          <section className="settings-panel__section">
+            <h3>Analysis Limits</h3>
+            <p className="settings-panel__description">
+              Control how many matches the AI returns per analysis and the maximum tokens it can use in a response.
+            </p>
+            <div className="settings-panel__row">
+              <TextInput
+                label="Max matches (1–50)"
+                type="number"
+                value={localMaxMatches}
+                onChange={(e) => setLocalMaxMatches(e.target.value)}
+                placeholder="12"
+              />
+              <TextInput
+                label="Max response tokens (256–16384)"
+                type="number"
+                value={localMaxTokens}
+                onChange={(e) => setLocalMaxTokens(e.target.value)}
+                placeholder="4096"
+              />
+            </div>
           </section>
 
           <section className="settings-panel__section">

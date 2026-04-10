@@ -4,6 +4,8 @@ import { AnthropicService } from '../services/anthropicService'
 
 interface UseAnalysisOptions {
   apiKey: string
+  maxMatches: number
+  maxTokens: number
 }
 
 interface DomContextInput {
@@ -15,17 +17,27 @@ interface DomContextInput {
   titleB: string
 }
 
-export function useAnalysis({ apiKey }: UseAnalysisOptions) {
+export function useAnalysis({ apiKey, maxMatches, maxTokens }: UseAnalysisOptions) {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [domLoaded, setDomLoaded] = useState(false)
-  const serviceRef = useRef(new AnthropicService({ apiKey }))
+  const configRef = useRef({ apiKey, maxMatches, maxTokens })
+  const serviceRef = useRef(new AnthropicService({ apiKey, maxMatches, maxTokens }))
 
   const updateApiKey = useCallback(
     (newKey: string) => {
-      // Replace the entire instance so the new prototype methods (and client) are used
-      serviceRef.current = new AnthropicService({ apiKey: newKey })
+      configRef.current.apiKey = newKey
+      serviceRef.current = new AnthropicService({ ...configRef.current })
+    },
+    []
+  )
+
+  const updateSettings = useCallback(
+    (newMaxMatches: number, newMaxTokens: number) => {
+      configRef.current.maxMatches = newMaxMatches
+      configRef.current.maxTokens = newMaxTokens
+      serviceRef.current = new AnthropicService({ ...configRef.current })
     },
     []
   )
@@ -123,6 +135,7 @@ export function useAnalysis({ apiKey }: UseAnalysisOptions) {
     error,
     domLoaded,
     updateApiKey,
+    updateSettings,
     loadDomContext,
     sendMessage,
     findSimilarElement,
